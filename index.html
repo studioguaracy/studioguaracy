@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Calculadora de ROI - Studio Guaracy</title>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Lato&family=Montserrat:wght@700&display=swap');
+  :root {
+    --yellow-gold: #FFBF1F;
+    --yellow-light: #FFD072;
+    --green-positive: #28a745;
+    --red-negative: #dc3545;
+    --gray-neutral: #6c757d;
+    --green-musgo: #485E35;
+    --green-escuro: #29422F;
+    --blue-petroleo: #00A3B0;
+    --black: #131313;
+    --gray-light: #A9A9A9;
+    --white: #FFFFFF;
+    --border-radius: 8px;
+  }
+  * {
+    box-sizing: border-box;
+    font-family: 'Lato', sans-serif;
+  }
+  body {
+    margin: 0; padding: 0; background: var(--white); color: var(--black);
+  }
+  .roi-calculator {
+    max-width: 720px;
+    background: var(--white);
+    margin: 1rem auto 2rem;
+    padding: 1rem 1.5rem 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: 0 0 14px rgba(0,0,0,0.1);
+  }
+  .header {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 1.9rem;
+    color: var(--yellow-gold);
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  .input-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+  }
+  .input-label {
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+    font-size: 1rem;
+    color: var(--green-escuro);
+    display: flex;
+    align-items: center;
+  }
+  .tooltip {
+    margin-left: 6px;
+    position: relative;
+    cursor: help;
+    color: var(--blue-petroleo);
+    font-weight: 700;
+    font-size: 1.1rem;
+    user-select: none;
+  }
+  .tooltip .tooltiptext {
+    visibility: hidden;
+    width: 210px;
+    background-color: var(--blue-petroleo);
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 6px 9px;
+    position: absolute;
+    z-index: 100;
+    bottom: 130%;
+    left: 50%;
+    margin-left: -105px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 0.85rem;
+    pointer-events: none;
+  }
+  .tooltip:hover .tooltiptext,
+  .tooltip:focus .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+  }
+  input[type="number"] {
+    padding: 0.55rem 0.85rem;
+    font-size: 1rem;
+    border: 1.5px solid var(--gray-light);
+    border-radius: var(--border-radius);
+    transition: border-color 0.25s ease;
+    width: 100%;
+  }
+  input[type="number"]:focus {
+    border-color: var(--yellow-gold);
+    outline: none;
+  }
+  .period-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-bottom: 1.9rem;
+  }
+  .period-buttons button {
+    background-color: var(--yellow-light);
+    border: none;
+    padding: 0.45rem 1.3rem;
+    border-radius: var(--border-radius);
+    color: var(--green-musgo);
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 1rem;
+    user-select: none;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    transition: background-color 0.25s, color 0.25s, box-shadow 0.25s;
+  }
+  .period-buttons button:hover:not(.active) {
+    background-color: var(--yellow-gold);
+    color: var(--white);
+    box-shadow: 0 0 14px var(--yellow-light);
+  }
+  .period-buttons button.active {
+    background-color: var(--yellow-gold);
+    color: var(--white);
+    box-shadow: 0 0 14px var(--yellow-light);
+    cursor: default;
+  }
+  .products-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.3rem;
+  }
+  .product-card {
+    border: 1.5px solid var(--gray-light);
+    border-radius: var(--border-radius);
+    padding: 1.1rem 1.4rem;
+    box-shadow: 0 3px 9px rgba(0,0,0,0.05);
+    background: var(--white);
+  }
+  .product-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--green-escuro);
+    margin-bottom: 1rem;
+  }
+  .product-enable {
+    transform: scale(1.3);
+    cursor: pointer;
+  }
+  .inputs-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 2rem;
+  }
+  .inputs-row .input-group {
+    flex: 1 1 48%;
+  }
+  .readonly-field {
+    background-color: #f9f9f9;
+    border-color: var(--gray-light);
+  }
+  .roi-card {
+    margin-top: 2.5rem;
+    padding: 1.6rem 2.2rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 1.7rem;
+    box-shadow: 0 3px 13px rgba(0,0,0,0.1);
+    user-select: none;
+  }
+  .roi-positive {
+    background-color: #e6f4ea;
+    border: 3px solid var(--green-positive);
+    color: var(--green-positive);
+  }
+  .roi-negative {
+    background-color: #fdecea;
+    border: 3px solid var(--red-negative);
+    color: var(--red-negative);
+  }
+  .roi-neutral {
+    background-color: #e9ecef;
+    border: 3px solid var(--gray-neutral);
+    color: var(--gray-neutral);
+  }
+  .roi-value {
+    font-size: 2.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-bottom: 0.3rem;
+  }
+  .icon-arrow {
+    width: 28px;
+    height: 28px;
+    stroke-width: 3.5;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    fill: none;
+  }
+  .icon-up {
+    stroke: var(--green-positive);
+  }
+  .icon-down {
+    stroke: var(--red-negative);
+  }
+
+  @media (max-width: 600px) {
+    .inputs-row .input-group { flex: 1 1 100%; }
+    .roi-calculator { margin: 1rem 0.8rem 2rem; padding: 1rem 1rem 1.6rem;}
+  }
+
+  /* Checkbox styling for products 2 and 3 */
+  input[type="checkbox"] {
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<div class="roi-calculator" role="region" aria-label="Calculadora de ROI Studio Guaracy">
+
+  <div class="header">Viabilidade de Investimento</div>
+
+  <div class="input-group">
+    <label for="investment" class="input-label">
+      Investimento Mensal (R$)
+      <span class="tooltip" tabindex="0" aria-label="Informação">ℹ
+        <span class="tooltiptext">Insira o investimento mensal planejado para marketing.</span>
+      </span>
+    </label>
+    <input type="number" id="investment" min="0" step="0.01" placeholder="Ex: 5000" aria-describedby="investment-desc" />
+  </div>
+
+  <div class="input-group">
+    <label class="input-label">
+      Período
+      <span class="tooltip" tabindex="0" aria-label="Informação">ℹ
+        <span class="tooltiptext">Selecione o período para calcular investimento total.</span>
+      </span>
+    </label>
+    <div class="period-buttons" role="radiogroup" aria-label="Selecione o período">
+      <button type="button" class="period-btn active" data-months="1" aria-pressed="true">1 mês</button>
+      <button type="button" class="period-btn" data-months="3" aria-pressed="false">3 meses</button>
+      <button type="button" class="period-btn" data-months="6" aria-pressed="false">6 meses</button>
+    </div>
+  </div>
+
+  <div class="input-group" style="margin-top: -0.4rem; margin-bottom: 1.5rem;">
+    <label class="input-label">
+      Investimento Total (R$)
+      <span class="tooltip" tabindex="0" aria-label="Informação">ℹ
+        <span class="tooltiptext">Investimento Mensal × Período selecionado.</span>
+      </span>
+    </label>
+    <input type="text" id="investment-total" class="readonly-field" readonly aria-readonly="true" value="R$ 0,00" />
+  </div>
+
+  <div class="products-container">
+
+    <!-- Produto 1 -->
+    <div class="product-card" data-index="1" aria-live="polite">
+      <div class="product-header">Produto 1</div>
+      <div class="inputs-row">
+        <div class="input-group">
+          <label for="cogs-1" class="input-label">COGS (R$)
+            <span class="tooltip" tabindex="0">ℹ
+              <span class="tooltiptext">Custo do produto vendido por unidade.</span>
+            </span>
+          </label>
+          <input type="number" id="cogs-1" class="product-input" min="0" step="0.01" data-field="cogs" data-index="1" />
+        </div>
+
+        <div class="input-group">
+          <label for="margin-1" class="input-label">Margem (%)
+            <span class="tooltip" tabindex="0">ℹ
+              <span class="tooltiptext">Margem de lucro percentual sobre preço de venda.</span>
+            </span>
+          </label>
+          <input type="number" id="margin-1" class="product-input" min="0" max="100" step="0.1" data-field="margin" data-index="1" />
+        </div>
+
+        <div class="input-group">
+          <label for="price-1" class="input-label">Preço de Venda (R$)
+            <span class="tooltip" tabindex="0">ℹ
+              <span class="tooltiptext">Preço ao cliente por unidade.</span>
+            </span>
+          </label>
+          <input type="number" id="price-1" class="product-input" min="0" step="0.01" data-field="price" data-index="1" />
+        </div>
+
+        <div class="input-group">
+          <label for="units-1" class="input-label">Unidades Vendidas
+            <span class="tooltip" tabindex="0">ℹ
+              <span class="tooltiptext">Quantidade prevista de unidades vendidas no período.</span>
+            </span>
+          </label>
+          <input type="number" id="units-1" class="product-input" min="0" step="1" data-field="units" data-index="1" />
+        </div>
+
+        <div class="input-group" style="flex: 1 1 100%;">
+          <label for="total-revenue-1" class="input-label">Faturamento Total (R$)</label>
+          <input type="text" id="total-revenue-1" readonly class="readonly-field" aria-readonly="true" />
+        </div>
+
+        <div class="input-group" style="flex: 1 1 100%;">
+          <label for="profit-1" class="input-label">Lucro por Unidade (R$)</label>
+          <input type="text" id="profit-1" readonly class="readonly-field" aria-readonly="true" />
+        </div>
+
+        <div class="input-group" style="flex: 1 1 100%;">
+          <label for="total-profit-1" class="input-label">Lucro Total (R$)</label>
+          <input type="text" id="total-profit-1" readonly class="readonly-field" aria-readonly="true"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- Produto 2 -->
+    <div class="product-card" data-index="2" aria-live="polite" style="opacity: 0.5; pointer-events: none; user-select: none;">
+      <div class="product-header">
+        Produto 2
+        <input type="checkbox" id="enable-2" aria-label="Ativar Produto 2" class="product-enable" />
+      </div>
+      <div class="inputs-row">
+        <div class="input-group"><label for="cogs-2" class="input-label">COGS (R$)</label>
+          <input type="number" id="cogs-2" class="product-input" min="0" step="0.01" data-field="cogs" data-index="2" /></div>
+        <div class="input-group"><label for="margin-2" class="input-label">Margem (%)</label>
+          <input type="number" id="margin-2" class="product-input" min="0" max="100" step="0.1" data-field="margin" data-index="2" /></div>
+        <div class="input-group"><label for="price-2" class="input-label">Preço de Venda (R$)</label>
+          <input type="number" id="price-2" class="product-input" min="0" step="0.01" data-field="price" data-index="2" /></div>
+        <div class="input-group"><label for="units-2" class="input-label">Unidades Vendidas</label>
+          <input type="number" id="units-2" class="product-input" min="0" step="1" data-field="units" data-index="2" /></div>
+        <div class="input-group" style="flex: 1 1 100%;">
+          <label for="total-revenue-2" class="input-label">Faturamento Total (R$)</label>
+          <input type="text" id="total-revenue-2" readonly class="readonly-field" aria-readonly="true" />
+        </div>
+        <div class="input-group" style="flex: 1 1 100%;">
+          <label for="profit-2" class="input-label">Lucro por Unidade (R$)</label>
+          <input type="text" id="profit-2" readonly class="readonly-field" aria-readonly="true" />
+        </div>
+        <div class="input-group" style="flex: 1 1 100%;">
+          <label for="total-profit-2" class="input-label">Lucro Total (R$)</label>
+          <input type="text" id="total-profit-2" readonly class="readonly-field" aria-readonly="true" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Produto 3 -->
+    <div class="product-card" data-index="3" aria-live="polite" style="opacity: 0.5; pointer-events: none; user-select: none;">
+      <div class="product-header">
+        Produto 3
+        <input type="checkbox" id="enable-3" aria-label="Ativar Produto 3" class="product-enable" />
+      </div>
+      <div class="inputs-row">
+        <div class="input-group"><label for="cogs-3" class="input-label">COGS (R$)</label>
+          <input type="number" id="cogs-3" class="product-input" min="0" step="0.01" data-field="cogs" data-index="3" /></div>
+        <div class="input-group"><label for="margin-3" class="input-label">Margem (%)</label>
+          <input type="number" id="margin-3" class="product-input" min="0" max="100" step="0.1" data-field="margin" data-index="3" /></div>
+        <div class="input-group"><label for="price-3" class="input-label">Preço de Venda (R$)</label>
+          <input type="number" id="price-3" class="product-input" min="0" step="0.01" data-field="price" data-index="3" /></div>
+        <div class="input-group"><label for="units-3" class="input-label">Unidades Vendidas</label>
+          <input type="number" id="units-3" class="product-input" min="0" step="1" data-field="units" data-index="3" /></div>
+        <div class="input-group" style="flex: 1 1 100%;">
+          <label for="total-revenue-3" class="input-label">Faturamento Total (R$)</label>
+          <input type="text" id="total-revenue-3" readonly class="readonly-field" aria-readonly="true" />
+        </div>
+        <div class="input-group" style="flex: 1 1 100%;">
+          <label for="profit-3" class="input-label">Lucro por Unidade (R$)</label>
+          <input type="text" id="profit-3" readonly class="readonly-field" aria-readonly="true" />
+        </div>
+        <div class="input-group" style="flex: 1 1 100%;">
+          <label for="total-profit-3" class="input-label">Lucro Total (R$)</label>
+          <input type="text" id="total-profit-3" readonly class="readonly-field" aria-readonly="true" />
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="roi-card" class="roi-card roi-neutral" aria-live="polite" role="region" aria-label="Resultado da viabilidade de investimento">
+    <div>ROI (%)</div>
+    <div class="roi-value" id="roi-value" aria-live="polite" aria-atomic="true">
+      <svg class="icon-arrow icon-up" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <polyline points="6 15 12 9 18 15"/>
+      </svg>
+      <span id="roi-percentage">0,00%</span>
+    </div>
+    <div id="roi-money" aria-live="polite" aria-atomic="true">R$ 0,00</div>
+  </div>
+
+</div>
+
+<script>
+  (function(){
+
+    // Format numbers as Brazilian currency and percentage
+    const formatCurrency = val => {
+      if (isNaN(val)) return 'R$ 0,00';
+      return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+    const formatPercent = val => {
+      if (isNaN(val)) return '0,00%';
+      return val.toFixed(2).replace('.', ',') + '%';
+    }
+
+    const investmentInput = document.getElementById('investment');
+    const investmentTotalInput = document.getElementById('investment-total');
+    const periodBtns = document.querySelectorAll('.period-btn');
+    const roiCard = document.getElementById('roi-card');
+    const roiPercentEl = document.getElementById('roi-percentage');
+    const roiMoneyEl = document.getElementById('roi-money');
+
+    // Array to hold product data enabled state
+    let products = [
+      { enabled: true },
+      { enabled: false },
+      { enabled: false }
+    ];
+
+    // Helper: get product related elements for index 0,1,2
+    function getProductEls(i) {
+      return {
+        card: document.querySelector(`.product-card[data-index="${i+1}"]`),
+        cogs: document.getElementById(`cogs-${i+1}`),
+        margin: document.getElementById(`margin-${i+1}`),
+        price: document.getElementById(`price-${i+1}`),
+        units: document.getElementById(`units-${i+1}`),
+        profit: document.getElementById(`profit-${i+1}`),
+        totalRevenue: document.getElementById(`total-revenue-${i+1}`),
+        totalProfit: document.getElementById(`total-profit-${i+1}`),
+        checkbox: document.getElementById(`enable-${i+1}`)
+      };
+    }
+
+    // Initialize checkboxes for products 2 and 3 to enable/disable cards
+    function initProductEnabling() {
+      [1, 2].forEach(idx => {
+        const { card, checkbox } = getProductEls(idx);
+        if (!checkbox) return;
+        checkbox.addEventListener('change', e => {
+          products[idx].enabled = e.target.checked;
+          if (e.target.checked) {
+            card.style.opacity = '1';
+            card.style.pointerEvents = 'auto';
+            card.style.userSelect = 'auto';
+          } else {
+            card.style.opacity = '0.5';
+            card.style.pointerEvents = 'none';
+            card.style.userSelect = 'none';
+            // Clear inputs when disabled
+            ['cogs', 'margin', 'price', 'units', 'profit', 'totalRevenue', 'totalProfit'].forEach(field => {
+              const input = document.getElementById(`${field}-${idx + 1}`);
+              if (input) input.value = '';
+            });
+          }
+          recalcAll();
+        });
+        // Initialize based on default state
+        if (!checkbox.checked) {
+          card.style.opacity = '0.5';
+          card.style.pointerEvents = 'none';
+          card.style.userSelect = 'none';
+        }
+      });
+    }
+
+    // Calculates the missing third field given two inputs (COGS, Margin or Price)
+    function solveProduct(i) {
+      const { cogs, margin, price, units, profit, totalRevenue, totalProfit } = getProductEls(i);
+      const cogsV = parseFloat(cogs.value.replace(',', '.'));
+      const marginV = parseFloat(margin.value.replace(',', '.'));
+      const priceV = parseFloat(price.value.replace(',', '.'));
+      const unitsV = parseInt(units.value);
+
+      // Determine which fields are filled (only cogs, margin, price for auto calculation)
+      const filled = [!isNaN(cogsV), !isNaN(marginV), !isNaN(priceV)];
+      const filledCount = filled.filter(Boolean).length;
+
+      // Calculate profit per unit and missing fields
+      if (filledCount === 3) {
+        profit.value = (priceV - cogsV).toFixed(2);
+      }
+      else if (filledCount === 2) {
+        if (filled[0] && filled[2] && !filled[1]) {
+          if(priceV !== 0) {
+            margin.value = (((priceV - cogsV) / priceV) * 100).toFixed(2);
+            profit.value = (priceV - cogsV).toFixed(2);
+          }
+        }
+        else if (filled[0] && filled[1] && !filled[2]) {
+          if (marginV < 100 && marginV >= 0) {
+            const p = cogsV / (1 - (marginV / 100));
+            price.value = p.toFixed(2);
+            profit.value = (p - cogsV).toFixed(2);
+          }
+        }
+        else if (!filled[0] && filled[1] && filled[2]) {
+          const c = priceV * (1 - (marginV / 100));
+          cogs.value = c.toFixed(2);
+          profit.value = (priceV - c).toFixed(2);
+        }
+      }
+      else {
+        profit.value = '';
+      }
+
+      // Calculate Faturamento Total (Preço × Unidades) and Lucro Total (Lucro unit × Unidades)
+      if (!isNaN(priceV) && !isNaN(unitsV) && unitsV >= 0) {
+        totalRevenue.value = formatCurrency(priceV * unitsV);
+      } else {
+        totalRevenue.value = '';
+      }
+      const profitUnitV = parseFloat(profit.value);
+      if (!isNaN(profitUnitV) && !isNaN(unitsV) && unitsV >= 0) {
+        totalProfit.value = formatCurrency(profitUnitV * unitsV);
+      } else {
+        totalProfit.value = '';
+      }
+    }
+
+    // Recalculate investment total and overall ROI
+    function recalcAll() {
+      // Read investment mensal
+      let investimentoMensal = parseFloat(investmentInput.value.replace(',', '.'));
+      if (isNaN(investimentoMensal) || investimentoMensal < 0) investimentoMensal = 0;
+
+      // Read period selected
+      let selectedPeriod = 1;
+      periodBtns.forEach(btn => {
+        if (btn.classList.contains('active')) {
+          selectedPeriod = parseInt(btn.dataset.months);
+        }
+      });
+
+      // Calculate investment total
+      let investimentoTotal = investimentoMensal * selectedPeriod;
+      investmentTotalInput.value = formatCurrency(investimentoTotal);
+
+      // Calculate lucro total (sum of products)
+      let lucroTotal = 0;
+      let faturamentoTotal = 0;
+
+      for (let i=0; i<3; i++) {
+        if (i === 0 || products[i].enabled) {
+          solveProduct(i);
+          const { profit, units, price } = getProductEls(i);
+          const profitV = parseFloat(profit.value.replace(',', '.'));
+          const unitsV = parseInt(units.value);
+          const priceV = parseFloat(price.value.replace(',', '.'));
+
+          if (!isNaN(profitV) && !isNaN(unitsV) && unitsV >= 0) {
+            lucroTotal += profitV * unitsV;
+          }
+          if (!isNaN(priceV) && !isNaN(unitsV) && unitsV >= 0) {
+            faturamentoTotal += priceV * unitsV;
+          }
+        }
+      }
+
+      // ROI calculation
+      let roiPercent = 0;
+      let roiMoney = 0;
+      if (investimentoTotal > 0) {
+        roiPercent = (lucroTotal / investimentoTotal) * 100;
+        roiMoney = lucroTotal - investimentoTotal;
+      }
+
+      // Update ROI display with correct color highlight
+      roiPercentEl.textContent = formatPercent(roiPercent);
+      roiMoneyEl.textContent = formatCurrency(roiMoney);
+
+      if (roiPercent > 0) {
+        roiCard.classList.add('roi-positive');
+        roiCard.classList.remove('roi-negative', 'roi-neutral');
+        roiCard.querySelector('svg').classList.add('icon-up');
+        roiCard.querySelector('svg').classList.remove('icon-down');
+      } else if (roiPercent === 0) {
+        roiCard.classList.add('roi-neutral');
+        roiCard.classList.remove('roi-positive', 'roi-negative');
+        roiCard.querySelector('svg').classList.remove('icon-up', 'icon-down');
+      } else {
+        roiCard.classList.add('roi-negative');
+        roiCard.classList.remove('roi-positive', 'roi-neutral');
+        roiCard.querySelector('svg').classList.add('icon-down');
+        roiCard.querySelector('svg').classList.remove('icon-up');
+      }
+    }
+
+    // Event listeners to inputs
+    function addListeners() {
+      document.querySelectorAll('.product-input, #investment').forEach(input => {
+        input.addEventListener('input', recalcAll);
+      });
+      periodBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          periodBtns.forEach(b => {
+            b.classList.remove('active');
+            b.setAttribute('aria-pressed', 'false');
+          });
+          btn.classList.add('active');
+          btn.setAttribute('aria-pressed', 'true');
+          recalcAll();
+        });
+      });
+    }
+
+    function init() {
+      initProductEnabling();
+      addListeners();
+      recalcAll();
+    }
+
+    init();
+
+  })();
+</script>
+
+</body>
+</html>
