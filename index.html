@@ -1,927 +1,382 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de ROI - Studio Guaracy</title>
-    <style>
-        /* Import Apple-style fonts */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        
-        :root {
-            /* Apple-inspired color palette */
-            --primary-yellow: #FFBF1F;
-            --success-green: #30D158;
-            --danger-red: #FF3B30;
-            --neutral-gray: #8E8E93;
-            --background: #F2F2F7;
-            --surface: #FFFFFF;
-            --text-primary: #1D1D1F;
-            --text-secondary: #8E8E93;
-            --border-light: rgba(0,0,0,0.04);
-            --border-focus: #FFBF1F;
-            
-            /* Spacing system (8px base) */
-            --space-xs: 8px;
-            --space-sm: 16px;
-            --space-md: 24px;
-            --space-lg: 32px;
-            --space-xl: 48px;
-            
-            /* Typography */
-            --font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', Inter, 'Segoe UI', Roboto, sans-serif;
-            
-            /* Shadows */
-            --shadow-card: 0 2px 16px rgba(0,0,0,0.06);
-            --shadow-focus: 0 4px 20px rgba(0,0,0,0.08);
-            --shadow-roi: 0 8px 32px rgba(0,0,0,0.12);
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: var(--font-family);
-            background: var(--background);
-            color: var(--text-primary);
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
-        }
-        
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: var(--space-md);
-        }
-        
-        /* Header */
-        .app-header {
-            text-align: center;
-            margin-bottom: var(--space-xl);
-        }
-        
-        .app-title {
-            font-size: 32px;
-            font-weight: 600;
-            color: var(--primary-yellow);
-            margin-bottom: var(--space-xs);
-        }
-        
-        .app-subtitle {
-            font-size: 16px;
-            color: var(--text-secondary);
-            font-weight: 400;
-        }
-        
-        /* Cards */
-        .card {
-            background: var(--surface);
-            border-radius: 16px;
-            padding: var(--space-md);
-            box-shadow: var(--shadow-card);
-            border: 1px solid var(--border-light);
-            margin-bottom: var(--space-md);
-        }
-        
-        .section-title {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: var(--space-md);
-            color: var(--text-primary);
-        }
-        
-        /* Form Elements */
-        .form-group {
-            margin-bottom: var(--space-md);
-        }
-        
-        .form-label {
-            display: block;
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--text-primary);
-            margin-bottom: var(--space-xs);
-        }
-        
-        .input-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-        
-        .input-prefix {
-            position: absolute;
-            left: 16px;
-            color: var(--text-secondary);
-            font-weight: 500;
-            z-index: 1;
-        }
-        
-        .form-control {
-            width: 100%;
-            height: 48px;
-            padding: 12px 16px;
-            border: 1.5px solid #E5E5EA;
-            border-radius: 12px;
-            font-size: 16px;
-            font-family: var(--font-family);
-            transition: all 0.2s ease;
-            background: var(--surface);
-        }
-        
-        .form-control:focus {
-            outline: none;
-            border-color: var(--border-focus);
-            box-shadow: 0 0 0 4px rgba(255, 191, 31, 0.1);
-        }
-        
-        .form-control[readonly] {
-            background: #F8F9FA;
-            color: var(--text-secondary);
-            cursor: not-allowed;
-        }
-        
-        .input-prefix + .form-control {
-            padding-left: 48px;
-        }
-        
-        /* Period Buttons */
-        .period-buttons {
-            display: flex;
-            gap: var(--space-xs);
-            padding: 4px;
-            background: #F0F0F0;
-            border-radius: 12px;
-        }
-        
-        .btn-period {
-            flex: 1;
-            padding: 12px 16px;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 500;
-            background: transparent;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        
-        .btn-period.active {
-            background: var(--surface);
-            color: var(--text-primary);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        
-        /* Total Investment */
-        .total-investment {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: var(--space-sm);
-            background: #F8F9FA;
-            border-radius: 12px;
-            margin-top: var(--space-sm);
-        }
-        
-        .total-label {
-            font-weight: 500;
-            color: var(--text-secondary);
-        }
-        
-        .total-value {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-        
-        /* Product Cards */
-        .products-grid {
-            display: grid;
-            gap: var(--space-md);
-        }
-        
-        .product-card {
-            position: relative;
-            transition: all 0.3s ease;
-        }
-        
-        .product-card.disabled {
-            opacity: 0.5;
-            pointer-events: none;
-        }
-        
-        .product-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: var(--space-md);
-        }
-        
-        .product-title {
-            font-size: 18px;
-            font-weight: 600;
-        }
-        
-        /* Toggle Switch */
-        .toggle-switch {
-            position: relative;
-            width: 52px;
-            height: 32px;
-        }
-        
-        .toggle-input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        
-        .toggle-slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #E5E5EA;
-            transition: 0.3s ease;
-            border-radius: 16px;
-        }
-        
-        .toggle-slider:before {
-            position: absolute;
-            content: "";
-            height: 28px;
-            width: 28px;
-            left: 2px;
-            bottom: 2px;
-            background-color: white;
-            transition: 0.3s ease;
-            border-radius: 50%;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .toggle-input:checked + .toggle-slider {
-            background-color: var(--primary-yellow);
-        }
-        
-        .toggle-input:checked + .toggle-slider:before {
-            transform: translateX(20px);
-        }
-        
-        /* Form Grid */
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: var(--space-sm);
-            margin-bottom: var(--space-sm);
-        }
-        
-        /* ROI Card */
-        .roi-card {
-            background: var(--surface);
-            border-radius: 20px;
-            padding: var(--space-lg);
-            box-shadow: var(--shadow-roi);
-            text-align: center;
-            margin-top: var(--space-xl);
-            transition: all 0.3s ease;
-        }
-        
-        .roi-label {
-            font-size: 16px;
-            font-weight: 500;
-            color: var(--text-secondary);
-            margin-bottom: var(--space-sm);
-        }
-        
-        .roi-value {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: var(--space-sm);
-            margin-bottom: var(--space-sm);
-        }
-        
-        .roi-percentage {
-            font-size: 36px;
-            font-weight: 700;
-        }
-        
-        .roi-money {
-            font-size: 18px;
-            font-weight: 600;
-        }
-        
-        .roi-icon {
-            width: 32px;
-            height: 32px;
-            stroke-width: 3;
-        }
-        
-        /* ROI States */
-        .roi-positive {
-            color: var(--success-green);
-            border: 2px solid var(--success-green);
-            background: rgba(48, 209, 88, 0.05);
-        }
-        
-        .roi-negative {
-            color: var(--danger-red);
-            border: 2px solid var(--danger-red);
-            background: rgba(255, 59, 48, 0.05);
-        }
-        
-        .roi-neutral {
-            color: var(--neutral-gray);
-            border: 2px solid var(--neutral-gray);
-            background: rgba(142, 142, 147, 0.05);
-        }
-        
-        /* Tooltips */
-        .tooltip {
-            position: relative;
-            display: inline-block;
-            margin-left: 4px;
-            cursor: help;
-        }
-        
-        .tooltip-icon {
-            width: 16px;
-            height: 16px;
-            color: var(--text-secondary);
-        }
-        
-        .tooltip-text {
-            visibility: hidden;
-            width: 200px;
-            background-color: var(--text-primary);
-            color: white;
-            text-align: center;
-            border-radius: 8px;
-            padding: 8px 12px;
-            position: absolute;
-            z-index: 1000;
-            bottom: 125%;
-            left: 50%;
-            margin-left: -100px;
-            opacity: 0;
-            transition: opacity 0.3s;
-            font-size: 12px;
-            font-weight: 400;
-        }
-        
-        .tooltip-text::after {
-            content: "";
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            margin-left: -5px;
-            border-width: 5px;
-            border-style: solid;
-            border-color: var(--text-primary) transparent transparent transparent;
-        }
-        
-        .tooltip:hover .tooltip-text {
-            visibility: visible;
-            opacity: 1;
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .container {
-                padding: var(--space-sm);
-            }
-            
-            .app-title {
-                font-size: 24px;
-            }
-            
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .period-buttons {
-                flex-direction: column;
-            }
-            
-            .roi-percentage {
-                font-size: 28px;
-            }
-        }
-        
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .card {
-            animation: fadeIn 0.6s ease-out;
-        }
-        
-        /* Accessibility */
-        .sr-only {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            white-space: nowrap;
-            border: 0;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <header class="app-header">
-            <h1 class="app-title">Viabilidade de Investimento</h1>
-            <p class="app-subtitle">Calcule o retorno do seu investimento com precisão</p>
-        </header>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Calculadora de ROI - Studio Guaracy</title>
 
-        <main>
-            <!-- Seção de Investimento -->
-            <section class="card">
-                <h2 class="section-title">💰 Investimento</h2>
-                
-                <div class="form-group">
-                    <label for="monthlyInvestment" class="form-label">
-                        Investimento Mensal
-                        <span class="tooltip">
-                            <svg class="tooltip-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                            <span class="tooltip-text">Valor mensal que será investido em marketing</span>
-                        </span>
-                    </label>
-                    <div class="input-wrapper">
-                        <span class="input-prefix">R$</span>
-                        <input type="number" id="monthlyInvestment" class="form-control" placeholder="0,00" step="0.01" min="0">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">
-                        Período
-                        <span class="tooltip">
-                            <svg class="tooltip-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                            <span class="tooltip-text">Período para calcular o investimento total</span>
-                        </span>
-                    </label>
-                    <div class="period-buttons">
-                        <button type="button" class="btn-period active" data-period="1">1 mês</button>
-                        <button type="button" class="btn-period" data-period="3">3 meses</button>
-                        <button type="button" class="btn-period" data-period="6">6 meses</button>
-                    </div>
-                </div>
-
-                <div class="total-investment">
-                    <span class="total-label">Investimento Total</span>
-                    <span class="total-value" id="totalInvestment">R$ 0,00</span>
-                </div>
-            </section>
-
-            <!-- Produtos -->
-            <section class="products-grid">
-                <!-- Produto 1 -->
-                <div class="card product-card" id="product1">
-                    <div class="product-header">
-                        <h3 class="product-title">📦 Produto 1</h3>
-                    </div>
-                    
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label class="form-label">
-                                COGS
-                                <span class="tooltip">
-                                    <svg class="tooltip-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
-                                    <span class="tooltip-text">Custo do produto por unidade</span>
-                                </span>
-                            </label>
-                            <div class="input-wrapper">
-                                <span class="input-prefix">R$</span>
-                                <input type="number" class="form-control cogs" step="0.01" min="0" placeholder="0,00">
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">
-                                Preço de Venda
-                                <span class="tooltip">
-                                    <svg class="tooltip-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
-                                    <span class="tooltip-text">Preço original antes do desconto</span>
-                                </span>
-                            </label>
-                            <div class="input-wrapper">
-                                <span class="input-prefix">R$</span>
-                                <input type="number" class="form-control price" step="0.01" min="0" placeholder="0,00">
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">
-                                Desconto
-                                <span class="tooltip">
-                                    <svg class="tooltip-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
-                                    <span class="tooltip-text">Percentual de desconto aplicado</span>
-                                </span>
-                            </label>
-                            <div class="input-wrapper">
-                                <input type="number" class="form-control discount" step="0.1" min="0" max="100" placeholder="0" value="0">
-                                <span class="input-prefix" style="right: 16px; left: auto;">%</span>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">
-                                Unidades Vendidas
-                                <span class="tooltip">
-                                    <svg class="tooltip-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
-                                    <span class="tooltip-text">Quantidade prevista de vendas no período</span>
-                                </span>
-                            </label>
-                            <input type="number" class="form-control units" step="1" min="0" placeholder="0">
-                        </div>
-                    </div>
-                    
-                    <div class="form-grid" style="margin-top: var(--space-md);">
-                        <div class="form-group">
-                            <label class="form-label">Faturamento Total</label>
-                            <div class="input-wrapper">
-                                <span class="input-prefix">R$</span>
-                                <input type="text" class="form-control revenue" readonly placeholder="0,00">
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Lucro por Unidade</label>
-                            <div class="input-wrapper">
-                                <span class="input-prefix">R$</span>
-                                <input type="text" class="form-control profit-per-unit" readonly placeholder="0,00">
-                            </div>
-                        </div>
-                        
-                        <div class="form-group" style="grid-column: 1 / -1;">
-                            <label class="form-label">Lucro Total</label>
-                            <div class="input-wrapper">
-                                <span class="input-prefix">R$</span>
-                                <input type="text" class="form-control total-profit" readonly placeholder="0,00">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Produto 2 -->
-                <div class="card product-card disabled" id="product2">
-                    <div class="product-header">
-                        <h3 class="product-title">📦 Produto 2</h3>
-                        <label class="toggle-switch">
-                            <input type="checkbox" class="toggle-input" id="toggle2">
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                    
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label class="form-label">COGS</label>
-                            <div class="input-wrapper">
-                                <span class="input-prefix">R$</span>
-                                <input type="number" class="form-control cogs" step="0.01" min="0" placeholder="0,00">
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Preço de Venda</label>
-                            <div class="input-wrapper">
-                                <span class="input-prefix">R$</span>
-                                <input type="number" class="form-control price" step="0.01" min="0" placeholder="0,00">
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Desconto</label>
-                            <div class="input-wrapper">
-                                <input type="number" class="form-control discount" step="0.1" min="0" max="100" placeholder="0" value="0">
-                                <span class="input-prefix" style="right: 16px; left: auto;">%</span>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Unidades Vendidas</label>
-                            <input type="number" class="form-control units" step="1" min="0" placeholder="0">
-                        </div>
-                    </div>
-                    
-                    <div class="form-grid" style="margin-top: var(--space-md);">
-                        <div class="form-group">
-                            <label class="form-label">Faturamento Total</label>
-                            <div class="input-wrapper">
-                                <span class="input-prefix">R$</span>
-                                <input type="text" class="form-control revenue" readonly placeholder="0,00">
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Lucro por Unidade</label>
-                            <div class="input-wrapper">
-                                <span class="input-prefix">R$</span>
-                                <input type="text" class="form-control profit-per-unit" readonly placeholder="0,00">
-                            </div>
-                        </div>
-                        
-                        <div class="form-group" style="grid-column: 1 / -1;">
-                            <label class="form-label">Lucro Total</label>
-                            <div class="input-wrapper">
-                                <span class="input-prefix">R$</span>
-                                <input type="text" class="form-control total-profit" readonly placeholder="0,00">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Produto 3 -->
-                <div class="card product-card disabled" id="product3">
-                    <div class="product-header">
-                        <h3 class="product-title">📦 Produto 3</h3>
-                        <label class="toggle-switch">
-                            <input type="checkbox" class="toggle-input" id="toggle3">
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                    
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label class="form-label">COGS</label>
-                            <div class="input-wrapper">
-                                <span class="input-prefix">R$</span>
-                                <input type="number" class="form-control cogs" step="0.01" min="0" placeholder="0,00">
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Preço de Venda</label>
-                            <div class="input-wrapper">
-                                <span class="input-prefix">R$</span>
-                                <input type="number" class="form-control price" step="0.01" min="0" placeholder="0,00">
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Desconto</label>
-                            <div class="input-wrapper">
-                                <input type="number" class="form-control discount" step="0.1" min="0" max="100" placeholder="0" value="0">
-                                <span class="input-prefix" style="right: 16px; left: auto;">%</span>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Unidades Vendidas</label>
-                            <input type="number" class="form-control units" step="1" min="0" placeholder="0">
-                        </div>
-                    </div>
-                    
-                    <div class="form-grid" style="margin-top: var(--space-md);">
-                        <div class="form-group">
-                            <label class="form-label">Faturamento Total</label>
-                            <div class="input-wrapper">
-                                <span class="input-prefix">R$</span>
-                                <input type="text" class="form-control revenue" readonly placeholder="0,00">
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Lucro por Unidade</label>
-                            <div class="input-wrapper">
-                                <span class="input-prefix">R$</span>
-                                <input type="text" class="form-control profit-per-unit" readonly placeholder="0,00">
-                            </div>
-                        </div>
-                        
-                        <div class="form-group" style="grid-column: 1 / -1;">
-                            <label class="form-label">Lucro Total</label>
-                            <div class="input-wrapper">
-                                <span class="input-prefix">R$</span>
-                                <input type="text" class="form-control total-profit" readonly placeholder="0,00">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- ROI Result -->
-            <section class="roi-card roi-neutral" id="roiCard">
-                <div class="roi-label">ROI (%)</div>
-                <div class="roi-value">
-                    <svg class="roi-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="roiIcon">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-                    </svg>
-                    <span class="roi-percentage" id="roiPercentage">0,00%</span>
-                </div>
-                <div class="roi-money" id="roiMoney">R$ 0,00</div>
-            </section>
-        </main>
-    </div>
-
-    <script>
-        class ROICalculator {
-            constructor() {
-                this.currentPeriod = 1;
-                this.init();
-            }
-
-            init() {
-                this.bindEvents();
-                this.updateTotalInvestment();
-                this.calculateAll();
-            }
-
-            bindEvents() {
-                // Investment events
-                const monthlyInvestment = document.getElementById('monthlyInvestment');
-                monthlyInvestment.addEventListener('input', () => {
-                    this.updateTotalInvestment();
-                    this.calculateROI();
-                });
-
-                // Period buttons
-                const periodButtons = document.querySelectorAll('.btn-period');
-                periodButtons.forEach(button => {
-                    button.addEventListener('click', (e) => this.selectPeriod(e));
-                });
-
-                // Product toggles
-                const toggle2 = document.getElementById('toggle2');
-                const toggle3 = document.getElementById('toggle3');
-                
-                toggle2.addEventListener('change', () => this.toggleProduct(2, toggle2.checked));
-                toggle3.addEventListener('change', () => this.toggleProduct(3, toggle3.checked));
-
-                // Product inputs
-                for (let i = 1; i <= 3; i++) {
-                    const productCard = document.getElementById(`product${i}`);
-                    if (productCard) {
-                        const inputs = productCard.querySelectorAll('.form-control:not([readonly])');
-                        inputs.forEach(input => {
-                            input.addEventListener('input', () => this.calculateProduct(i));
-                            input.addEventListener('change', () => this.calculateProduct(i));
-                        });
-                    }
-                }
-            }
-
-            selectPeriod(e) {
-                document.querySelectorAll('.btn-period').forEach(btn => {
-                    btn.classList.remove('active');
-                });
-                
-                e.target.classList.add('active');
-                this.currentPeriod = parseInt(e.target.dataset.period);
-                this.updateTotalInvestment();
-            }
-
-            updateTotalInvestment() {
-                const monthlyInvestment = parseFloat(document.getElementById('monthlyInvestment').value) || 0;
-                const totalInvestment = monthlyInvestment * this.currentPeriod;
-                
-                document.getElementById('totalInvestment').textContent = this.formatCurrency(totalInvestment);
-                this.calculateROI();
-            }
-
-            toggleProduct(productNumber, enabled) {
-                const productCard = document.getElementById(`product${productNumber}`);
-                
-                if (enabled) {
-                    productCard.classList.remove('disabled');
-                } else {
-                    productCard.classList.add('disabled');
-                    // Clear inputs
-                    const inputs = productCard.querySelectorAll('.form-control');
-                    inputs.forEach(input => {
-                        if (!input.hasAttribute('readonly')) {
-                            input.value = '';
-                        } else {
-                            input.value = '';
-                        }
-                    });
-                }
-                
-                this.calculateProduct(productNumber);
-            }
-
-            calculateProduct(productNumber) {
-                const productCard = document.getElementById(`product${productNumber}`);
-                
-                if (productCard.classList.contains('disabled')) {
-                    return;
-                }
-
-                const cogs = parseFloat(productCard.querySelector('.cogs').value) || 0;
-                const price = parseFloat(productCard.querySelector('.price').value) || 0;
-                const discount = parseFloat(productCard.querySelector('.discount').value) || 0;
-                const units = parseInt(productCard.querySelector('.units').value) || 0;
-
-                // Calculate final price after discount
-                const finalPrice = price * (1 - discount / 100);
-                
-                // Calculate profit per unit
-                const profitPerUnit = finalPrice - cogs;
-                
-                // Calculate totals
-                const revenue = finalPrice * units;
-                const totalProfit = profitPerUnit * units;
-
-                // Update readonly fields
-                productCard.querySelector('.revenue').value = this.formatCurrency(revenue);
-                productCard.querySelector('.profit-per-unit').value = this.formatCurrency(profitPerUnit);
-                productCard.querySelector('.total-profit').value = this.formatCurrency(totalProfit);
-
-                this.calculateROI();
-            }
-
-            calculateAll() {
-                for (let i = 1; i <= 3; i++) {
-                    this.calculateProduct(i);
-                }
-            }
-
-            calculateROI() {
-                const monthlyInvestment = parseFloat(document.getElementById('monthlyInvestment').value) || 0;
-                const totalInvestment = monthlyInvestment * this.currentPeriod;
-                
-                let totalProfit = 0;
-                
-                for (let i = 1; i <= 3; i++) {
-                    const productCard = document.getElementById(`product${i}`);
-                    if (!productCard.classList.contains('disabled')) {
-                        const profit = parseFloat(productCard.querySelector('.total-profit').value.replace('R$', '').replace(/\./g, '').replace(',', '.')) || 0;
-                        totalProfit += profit;
-                    }
-                }
-
-                let roiPercentage = 0;
-                if (totalInvestment > 0) {
-                    roiPercentage = (totalProfit / totalInvestment) * 100;
-                }
-
-                const roiMoney = totalProfit - totalInvestment;
-
-                // Update ROI display
-                document.getElementById('roiPercentage').textContent = this.formatPercentage(roiPercentage);
-                document.getElementById('roiMoney').textContent = this.formatCurrency(roiMoney);
-
-                // Update ROI card styling
-                const roiCard = document.getElementById('roiCard');
-                const roiIcon = document.getElementById('roiIcon');
-                
-                roiCard.classList.remove('roi-positive', 'roi-negative', 'roi-neutral');
-                
-                if (roiPercentage > 100) {
-                    roiCard.classList.add('roi-positive');
-                    roiIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5-5 5M6 12h12"></path>';
-                } else if (roiPercentage === 100) {
-                    roiCard.classList.add('roi-neutral');
-                    roiIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>';
-                } else {
-                    roiCard.classList.add('roi-negative');
-                    roiIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17l5-5-5-5M6 12h12"></path>';
-                }
-            }
-
-            formatCurrency(value) {
-                return new Intl.NumberFormat('pt-BR', {
-                    style: 'currency',
-                    currency: 'BRL'
-                }).format(value);
-            }
-
-            formatPercentage(value) {
-                return new Intl.NumberFormat('pt-BR', {
-                    style: 'percent',
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                }).format(value / 100);
-            }
-        }
-
-        // Initialize calculator when DOM is loaded
-        document.addEventListener('DOMContentLoaded', () => {
-            new ROICalculator();
-        });
-    </script>
-</body>
-</html>
+<style>
+  /* Apple-inspired fonts */
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  
+  :root {
+    /* Colors */
+    --primary-yellow: #FFBF1F;
+    --success-green: #30D158;
+    --danger-red: #FF3B30;
+    --neutral-gray: #8E8E93;
+    --background: #F2F2F7;
+    --surface: #FFFFFF;
+    --text-primary: #1D1D1F;
+    --text-secondary: #8E8E93;
+    --border-light: rgba(0,0,0,0.04);
+    --border-focus: #FFBF1F;
+    
+    /* Spacing */
+    --space-xs: 8px;
+    --space-sm: 16px;
+    --space-md: 24px;
+    --space-lg: 32px;
+    --space-xl: 48px;
+    
+    /* Typography */
+    --font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', Inter, 'Segoe UI', Roboto, sans-serif;
+    
+    /* Shadows */
+    --shadow-card: 0 2px 16px rgba(0,0,0,0.06);
+    --shadow-focus: 0 4px 20px rgba(0,0,0,0.08);
+    --shadow-roi: 0 8px 32px rgba(0,0,0,0.12);
+  }
+  
+  * {
+    margin: 0; padding: 0; box-sizing: border-box;
+  }
+  
+  body {
+    font-family: var(--font-family);
+    background: var(--background);
+    color: var(--text-primary);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: var(--space-md);
+  }
+  
+  /* Header */
+  .app-header {
+    text-align: center;
+    margin-bottom: var(--space-xl);
+  }
+  
+  .app-title {
+    font-size: 32px;
+    font-weight: 600;
+    color: var(--primary-yellow);
+    margin-bottom: var(--space-xs);
+  }
+  
+  .app-subtitle {
+    font-size: 16px;
+    color: var(--text-secondary);
+    font-weight: 400;
+  }
+  
+  /* Cards */
+  .card {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: var(--space-md);
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--border-light);
+    margin-bottom: var(--space-md);
+  }
+  
+  .section-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: var(--space-md);
+    color: var(--text-primary);
+  }
+  
+  /* Form Elements */
+  .form-group {
+    margin-bottom: var(--space-md);
+  }
+  
+  .form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: var(--space-xs);
+  }
+  
+  .input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  
+  .input-prefix {
+    position: absolute;
+    left: 16px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    z-index: 1;
+  }
+  
+  .input-suffix {
+    position: absolute;
+    right: 16px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    z-index: 1;
+  }
+  
+  .form-control {
+    width: 100%;
+    height: 48px;
+    padding: 12px 16px;
+    border: 1.5px solid #E5E5EA;
+    border-radius: 12px;
+    font-size: 16px;
+    font-family: var(--font-family);
+    transition: all 0.2s ease;
+    background: var(--surface);
+    box-sizing: border-box;
+  }
+  
+  .form-control:focus {
+    outline: none;
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 4px rgba(255, 191, 31, 0.1);
+  }
+  
+  .form-control[readonly] {
+    background: #F8F9FA;
+    color: var(--text-secondary);
+    cursor: not-allowed;
+  }
+  
+  .input-prefix + .form-control {
+    padding-left: 48px;
+  }
+  
+  /* Period Buttons */
+  .period-buttons {
+    display: flex;
+    gap: var(--space-xs);
+    padding: 4px;
+    background: #F0F0F0;
+    border-radius: 12px;
+  }
+  
+  .btn-period {
+    flex: 1;
+    padding: 12px 16px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .btn-period.active {
+    background: var(--surface);
+    color: var(--text-primary);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  
+  /* Total Investment */
+  .total-investment {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-sm);
+    background: #F8F9FA;
+    border-radius: 12px;
+    margin-top: var(--space-sm);
+  }
+  
+  .total-label {
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+  
+  .total-value {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  
+  /* Product Cards */
+  .products-grid {
+    display: grid;
+    gap: var(--space-md);
+  }
+  
+  .product-card {
+    position: relative;
+    transition: all 0.3s ease;
+  }
+  
+  .product-card.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  
+  .product-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-md);
+  }
+  
+  .product-title {
+    font-size: 18px;
+    font-weight: 600;
+  }
+  
+  /* Toggle Switch */
+  .toggle-switch {
+    position: relative;
+    width: 52px;
+    height: 32px;
+  }
+  
+  .toggle-input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  .toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #E5E5EA;
+    transition: 0.3s ease;
+    border-radius: 16px;
+  }
+  
+  .toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 28px;
+    width: 28px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    transition: 0.3s ease;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .toggle-input:checked + .toggle-slider {
+    background-color: var(--primary-yellow);
+  }
+  
+  .toggle-input:checked + .toggle-slider:before {
+    transform: translateX(20px);
+  }
+  
+  /* Form Grid */
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--space-sm);
+    margin-bottom: var(--space-sm);
+  }
+  
+  /* ROI Card */
+  .roi-card {
+    background: var(--surface);
+    border-radius: 20px;
+    padding: var(--space-lg);
+    box-shadow: var(--shadow-roi);
+    text-align: center;
+    margin-top: var(--space-xl);
+    transition: all 0.3s ease;
+  }
+  
+  .roi-label {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-sm);
+  }
+  
+  .roi-value {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-sm);
+  }
+  
+  .roi-percentage {
+    font-size: 36px;
+    font-weight: 700;
+  }
+  
+  .roi-money {
+    font-size: 18px;
+    font-weight: 600;
+  }
+  
+  .roi-icon {
+    width: 32px;
+    height: 32px;
+    stroke-width: 3;
+  }
+  
+  /* ROI States */
+  .roi-positive {
+    color: var(--success-green);
+    border: 2px solid var(--success-green);
+    background: rgba(48, 209, 88, 0.05);
+  }
+  
+  .roi-negative {
+    color: var(--danger-red);
+    border: 2px solid var(--danger-red);
+    background: rgba(255, 59, 48, 0.05);
+  }
+  
+  .roi-neutral {
+    color: var(--neutral-gray);
+    border: 2px solid var(--neutral-gray);
+    background: rgba(142, 142, 147, 0.05);
+  }
+  
+  /* Tooltips */
+  .tooltip {
+    position: relative;
+    display: inline-block;
+    margin-left: 4px;
+    cursor: help;
+  }
+  
+  .tooltip-icon {
+    width: 16px;
+    height: 16px;
+    color: var(--text-secondary);
+  }
+  
+  .tooltip-text {
+    visibility: hidden;
+    width: 200px;
+    background-color: var(--text-primary);
+    color: white;
+    text-align: center;
+    border-radius: 8px;
+    padding: 8px 12px;
+    position: absolute;
+    z-index: 1000;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -100px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 12px;
+    font-weight:
