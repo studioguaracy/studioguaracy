@@ -2,381 +2,178 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Calculadora de ROI - Studio Guaracy</title>
 
 <style>
-  /* Apple-inspired fonts */
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-  
-  :root {
-    /* Colors */
-    --primary-yellow: #FFBF1F;
-    --success-green: #30D158;
-    --danger-red: #FF3B30;
-    --neutral-gray: #8E8E93;
-    --background: #F2F2F7;
-    --surface: #FFFFFF;
-    --text-primary: #1D1D1F;
-    --text-secondary: #8E8E93;
-    --border-light: rgba(0,0,0,0.04);
-    --border-focus: #FFBF1F;
-    
-    /* Spacing */
-    --space-xs: 8px;
-    --space-sm: 16px;
-    --space-md: 24px;
-    --space-lg: 32px;
-    --space-xl: 48px;
-    
-    /* Typography */
-    --font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', Inter, 'Segoe UI', Roboto, sans-serif;
-    
-    /* Shadows */
-    --shadow-card: 0 2px 16px rgba(0,0,0,0.06);
-    --shadow-focus: 0 4px 20px rgba(0,0,0,0.08);
-    --shadow-roi: 0 8px 32px rgba(0,0,0,0.12);
-  }
-  
-  * {
-    margin: 0; padding: 0; box-sizing: border-box;
-  }
-  
-  body {
-    font-family: var(--font-family);
-    background: var(--background);
-    color: var(--text-primary);
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-  }
-  
-  .container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: var(--space-md);
-  }
-  
-  /* Header */
-  .app-header {
-    text-align: center;
-    margin-bottom: var(--space-xl);
-  }
-  
-  .app-title {
-    font-size: 32px;
-    font-weight: 600;
-    color: var(--primary-yellow);
-    margin-bottom: var(--space-xs);
-  }
-  
-  .app-subtitle {
-    font-size: 16px;
-    color: var(--text-secondary);
-    font-weight: 400;
-  }
-  
-  /* Cards */
-  .card {
-    background: var(--surface);
-    border-radius: 16px;
-    padding: var(--space-md);
-    box-shadow: var(--shadow-card);
-    border: 1px solid var(--border-light);
-    margin-bottom: var(--space-md);
-  }
-  
-  .section-title {
-    font-size: 20px;
-    font-weight: 600;
-    margin-bottom: var(--space-md);
-    color: var(--text-primary);
-  }
-  
-  /* Form Elements */
-  .form-group {
-    margin-bottom: var(--space-md);
-  }
-  
-  .form-label {
-    display: block;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--text-primary);
-    margin-bottom: var(--space-xs);
-  }
-  
-  .input-wrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
-  }
-  
-  .input-prefix {
-    position: absolute;
-    left: 16px;
-    color: var(--text-secondary);
-    font-weight: 500;
-    z-index: 1;
-  }
-  
-  .input-suffix {
-    position: absolute;
-    right: 16px;
-    color: var(--text-secondary);
-    font-weight: 500;
-    z-index: 1;
-  }
-  
-  .form-control {
-    width: 100%;
-    height: 48px;
-    padding: 12px 16px;
-    border: 1.5px solid #E5E5EA;
-    border-radius: 12px;
-    font-size: 16px;
-    font-family: var(--font-family);
-    transition: all 0.2s ease;
-    background: var(--surface);
-    box-sizing: border-box;
-  }
-  
-  .form-control:focus {
-    outline: none;
-    border-color: var(--border-focus);
-    box-shadow: 0 0 0 4px rgba(255, 191, 31, 0.1);
-  }
-  
-  .form-control[readonly] {
-    background: #F8F9FA;
-    color: var(--text-secondary);
-    cursor: not-allowed;
-  }
-  
-  .input-prefix + .form-control {
-    padding-left: 48px;
-  }
-  
-  /* Period Buttons */
-  .period-buttons {
-    display: flex;
-    gap: var(--space-xs);
-    padding: 4px;
-    background: #F0F0F0;
-    border-radius: 12px;
-  }
-  
-  .btn-period {
-    flex: 1;
-    padding: 12px 16px;
-    border: none;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 500;
-    background: transparent;
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-  
-  .btn-period.active {
-    background: var(--surface);
-    color: var(--text-primary);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  }
-  
-  /* Total Investment */
-  .total-investment {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: var(--space-sm);
-    background: #F8F9FA;
-    border-radius: 12px;
-    margin-top: var(--space-sm);
-  }
-  
-  .total-label {
-    font-weight: 500;
-    color: var(--text-secondary);
-  }
-  
-  .total-value {
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--text-primary);
-  }
-  
-  /* Product Cards */
-  .products-grid {
-    display: grid;
-    gap: var(--space-md);
-  }
-  
-  .product-card {
-    position: relative;
-    transition: all 0.3s ease;
-  }
-  
-  .product-card.disabled {
-    opacity: 0.5;
-    pointer-events: none;
-  }
-  
-  .product-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: var(--space-md);
-  }
-  
-  .product-title {
-    font-size: 18px;
-    font-weight: 600;
-  }
-  
-  /* Toggle Switch */
-  .toggle-switch {
-    position: relative;
-    width: 52px;
-    height: 32px;
-  }
-  
-  .toggle-input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-  }
-  
-  .toggle-slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #E5E5EA;
-    transition: 0.3s ease;
-    border-radius: 16px;
-  }
-  
-  .toggle-slider:before {
-    position: absolute;
-    content: "";
-    height: 28px;
-    width: 28px;
-    left: 2px;
-    bottom: 2px;
-    background-color: white;
-    transition: 0.3s ease;
-    border-radius: 50%;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  }
-  
-  .toggle-input:checked + .toggle-slider {
-    background-color: var(--primary-yellow);
-  }
-  
-  .toggle-input:checked + .toggle-slider:before {
-    transform: translateX(20px);
-  }
-  
-  /* Form Grid */
-  .form-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: var(--space-sm);
-    margin-bottom: var(--space-sm);
-  }
-  
-  /* ROI Card */
-  .roi-card {
-    background: var(--surface);
-    border-radius: 20px;
-    padding: var(--space-lg);
-    box-shadow: var(--shadow-roi);
-    text-align: center;
-    margin-top: var(--space-xl);
-    transition: all 0.3s ease;
-  }
-  
-  .roi-label {
-    font-size: 16px;
-    font-weight: 500;
-    color: var(--text-secondary);
-    margin-bottom: var(--space-sm);
-  }
-  
-  .roi-value {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-sm);
-    margin-bottom: var(--space-sm);
-  }
-  
-  .roi-percentage {
-    font-size: 36px;
-    font-weight: 700;
-  }
-  
-  .roi-money {
-    font-size: 18px;
-    font-weight: 600;
-  }
-  
-  .roi-icon {
-    width: 32px;
-    height: 32px;
-    stroke-width: 3;
-  }
-  
-  /* ROI States */
-  .roi-positive {
-    color: var(--success-green);
-    border: 2px solid var(--success-green);
-    background: rgba(48, 209, 88, 0.05);
-  }
-  
-  .roi-negative {
-    color: var(--danger-red);
-    border: 2px solid var(--danger-red);
-    background: rgba(255, 59, 48, 0.05);
-  }
-  
-  .roi-neutral {
-    color: var(--neutral-gray);
-    border: 2px solid var(--neutral-gray);
-    background: rgba(142, 142, 147, 0.05);
-  }
-  
-  /* Tooltips */
-  .tooltip {
-    position: relative;
-    display: inline-block;
-    margin-left: 4px;
-    cursor: help;
-  }
-  
-  .tooltip-icon {
-    width: 16px;
-    height: 16px;
-    color: var(--text-secondary);
-  }
-  
-  .tooltip-text {
-    visibility: hidden;
-    width: 200px;
-    background-color: var(--text-primary);
-    color: white;
-    text-align: center;
-    border-radius: 8px;
-    padding: 8px 12px;
-    position: absolute;
-    z-index: 1000;
-    bottom: 125%;
-    left: 50%;
-    margin-left: -100px;
-    opacity: 0;
-    transition: opacity 0.3s;
-    font-size: 12px;
-    font-weight:
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --primary-yellow: #FFBF1F;
+  --success-green: #30D158;
+  --danger-red: #FF3B30;
+  --neutral-gray: #8E8E93;
+  --background: #F2F2F7;
+  --surface: #FFFFFF;
+  --text-primary: #1D1D1F;
+  --text-secondary: #8E8E93;
+  --border-light: rgba(0,0,0,0.04);
+  --border-focus: #FFBF1F;
+  --space-xs: 8px;
+  --space-sm: 16px;
+  --space-md: 24px;
+  --space-lg: 32px;
+  --space-xl: 48px;
+  --font-family: 'Inter', sans-serif;
+  --shadow-card: 0 2px 16px rgba(0,0,0,0.06);
+  --shadow-roi: 0 8px 32px rgba(0,0,0,0.12);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+ font-family: var(--font-family);
+ background: var(--background);
+ color: var(--text-primary);
+ line-height: 1.6;
+ -webkit-font-smoothing: antialiased;
+}
+
+.container {
+ max-width: 800px;
+ margin: 0 auto;
+ padding: var(--space-md);
+}
+
+/* Cabeçalho */
+.app-header {
+ text-align: center;
+ margin-bottom: var(--space-xl);
+}
+.app-title {
+ font-size: 32px;
+ font-weight: 700;
+ color: var(--primary-yellow);
+ margin-bottom: var(--space-xs);
+}
+.app-subtitle {
+ font-size: 16px;
+ color: var(--text-secondary);
+}
+
+/* Card geral */
+.card {
+ background: var(--surface);
+ border-radius: 16px;
+ padding: var(--space-md);
+ box-shadow: var(--shadow-card);
+ border: 1px solid var(--border-light);
+ margin-bottom: var(--space-md);
+}
+
+/* Seção título */
+.section-title {
+ font-size: 20px;
+ font-weight: 600;
+ margin-bottom: var(--space-md);
+ color: var(--text-primary);
+}
+
+/* Formulário */
+.form-group {
+ margin-bottom: var(--space-md);
+}
+.form-label {
+ font-size: 14px;
+ font-weight: 500;
+ margin-bottom: var(--space-xs);
+ display: flex;
+ align-items: center;
+}
+.tooltip {
+ position: relative;
+ margin-left: 6px;
+ cursor: help;
+}
+.tooltip svg {
+ width: 16px; height: 16px; color: var(--text-secondary);
+}
+.tooltip .tooltiptext {
+ visibility: hidden;
+ width: 200px;
+ background: #333;
+ color: #fff;
+ text-align: center;
+ border-radius: 6px;
+ padding: 8px;
+ position: absolute;
+ bottom: 125%;
+ left: 50%;
+ margin-left: -100px;
+ opacity: 0;
+ transition: opacity 0.3s;
+ font-size: 12px;
+}
+.tooltip:hover .tooltiptext {
+ visibility: visible;
+ opacity: 1;
+}
+
+/* Inputs */
+.input-wrapper {
+ position: relative;
+}
+.input-prefix, .input-suffix {
+ position: absolute;
+ top: 50%;
+ transform: translateY(-50%);
+ font-size: 14px;
+ color: var(--text-secondary);
+}
+.input-prefix { left: 16px; }
+.input-suffix { right: 16px; }
+.form-control {
+ width: 100%;
+ height: 48px;
+ padding: 12px 16px;
+ border: 1.5px solid #E5E5EA;
+ border-radius: 12px;
+ font-size: 16px;
+ font-family: var(--font-family);
+ transition: all 0.2s ease;
+ background: var(--surface);
+}
+.form-control:focus {
+ outline: none;
+ border-color: var(--border-focus);
+ box-shadow: 0 0 0 4px rgba(255, 191, 31, 0.1);
+}
+.form-control[readonly] {
+ background: #F8F9FA;
+ color: var(--text-secondary);
+ cursor: not-allowed;
+ padding-left: 48px;
+}
+</style>
+</head>
+<body>
+<div class="container" role="main" aria-label="Calculadora de ROI Studio Guaracy">
+<header class="app-header">
+<h1 class="app-title">Viabilidade de Investimento</h1>
+</header>
+
+<!-- Investimento e Período -->
+<section class="card">
+<h2 class="section-title">💰 Investimento</h2>
+<div class="form-group">
+<label class="form-label" for="monthlyInvest">Investimento Mensal</label>
+<div class="input-wrapper">
+<span class="input-prefix">R$</span>
+<input type="number" id="monthlyInvest" placeholder="0,00" min="0" step="0.01" />
+</div>
+</div>
+<div class="form-group">
+<label class="form-label">Período</label>
+<div class="period-buttons" role="radiogroup">
+<button class="btn-period active" data-period="1" aria-pressed="true">1 mês</button>
+<button class="btn-period" data-period="3" aria-
